@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Datalogger = require('./models/Datalogger');
+const Datalogger = require('../models/Datalogger');
 
 // Initialize the app
 const app = express();
