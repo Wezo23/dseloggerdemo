@@ -47,6 +47,23 @@ app.get('/logs/:id', async (req, res) => {
 // 3. Create a new log
 app.post('/logs', async (req, res) => {
     try {
+        const { message, timestamp, relatedIds } = req.body;
+
+        // Validate required fields
+        if (!message || !timestamp) {
+            return res.status(400).json({ error: 'Message and timestamp are required' });
+        }
+
+        // Validate relatedIds (if present) to ensure they are valid ObjectIds
+        if (relatedIds && Array.isArray(relatedIds)) {
+            for (const id of relatedIds) {
+                if (!mongoose.Types.ObjectId.isValid(id)) {
+                    return res.status(400).json({ error: `Invalid ObjectId: ${id}` });
+                }
+            }
+        }
+
+        // Create a new log
         const newLog = new Datalogger(req.body);
         const savedLog = await newLog.save();
         res.status(201).json(savedLog);
