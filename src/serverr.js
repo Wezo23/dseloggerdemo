@@ -1,3 +1,5 @@
+
+
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
@@ -5,10 +7,6 @@ import packetRoutes from './routes/packetRoutes.js';
 
 // Load environment variables
 dotenv.config();
-
-// Debug logs for environment variables
-console.log('PORT:', process.env.PORT);
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
 
 // Connect to MongoDB
 connectDB();
@@ -24,8 +22,6 @@ app.use('/api', packetRoutes);
 // Server Port
 const PORT = process.env.PORT || 8000;
 
-// Debug log before starting the server
-console.log('Starting the server...');
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
