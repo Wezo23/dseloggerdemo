@@ -14,6 +14,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Add support for URL-encoded data
 app.use(cors());
 
+// Log raw request body for debugging
+app.use((req, res, next) => {
+    req.rawBody = '';
+    req.on('data', (chunk) => {
+        req.rawBody += chunk;
+    });
+    req.on('end', () => {
+        console.log('Raw Body:', req.rawBody); // Log the raw body
+        next();
+    });
+});
+
 // Log all incoming requests
 app.use((req, res, next) => {
     console.log(`Incoming Request: ${req.method} ${req.url}`);
@@ -56,8 +68,20 @@ app.get('/logs/:id', async (req, res) => {
 // 3. Create a new log
 app.post('/logs', async (req, res) => {
     try {
-        console.log('Received Data:', req.body); // Log the incoming data
-        const newLog = new Datalogger(req.body); // Directly use the request body
+        let data = req.body;
+
+        // Fallback for raw body if req.body is undefined
+        if (!data || Object.keys(data).length === 0) {
+            try {
+                data = JSON.parse(req.rawBody || '{}'); // Attempt to parse raw body
+            } catch (err) {
+                console.error('Error parsing raw body:', err.message);
+                return res.status(400).json({ error: 'Invalid JSON format' });
+            }
+        }
+
+        console.log('Received Data:', data); // Log the parsed data
+        const newLog = new Datalogger(data); // Use the parsed data
         const savedLog = await newLog.save(); // Save the log to the database
         res.status(201).json(savedLog); // Respond with the saved log
     } catch (err) {
