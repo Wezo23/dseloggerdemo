@@ -11,7 +11,16 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // Add support for URL-encoded data
 app.use(cors());
+
+// Log all incoming requests
+app.use((req, res, next) => {
+    console.log(`Incoming Request: ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    next();
+});
 
 // MongoDB Connection
 const DB_URI = process.env.MONGODB_URI; // Use environment variable for DB URI
@@ -47,10 +56,12 @@ app.get('/logs/:id', async (req, res) => {
 // 3. Create a new log
 app.post('/logs', async (req, res) => {
     try {
+        console.log('Received Data:', req.body); // Log the incoming data
         const newLog = new Datalogger(req.body); // Directly use the request body
         const savedLog = await newLog.save(); // Save the log to the database
         res.status(201).json(savedLog); // Respond with the saved log
     } catch (err) {
+        console.error('Error Saving Data:', err.message); // Log the error
         res.status(400).json({ error: err.message }); // Handle any errors
     }
 });
