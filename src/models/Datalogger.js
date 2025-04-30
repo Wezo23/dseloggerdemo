@@ -22,11 +22,17 @@ const ModbusSchema = new mongoose.Schema({
     KWH_COUNTER: Number,
     MWH_COUNTER: Number,
     GWH_COUNTER: Number,
+    GHI: Number, // Added field
+    POA: Number, // Added field
+    "Module Temp": Number, // Added field
+    "Ambient Temp": Number, // Added field
+    Direction: Number, // Added field
+    Humidity: Number, // Added field
+    "Wind Speed": Number, // Added field
 });
 
 // Define the main schema for Datalogger
 const DataloggerSchema = new mongoose.Schema({
-    id: { type: mongoose.Schema.Types.ObjectId, required: true },
     imei: { type: String, required: true },
     uid: { type: Number, required: true },
     dtm: { type: String, required: true },
