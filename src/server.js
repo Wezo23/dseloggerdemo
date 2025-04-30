@@ -47,7 +47,17 @@ app.get('/logs/:id', async (req, res) => {
 // 3. Create a new log
 app.post('/logs', async (req, res) => {
     try {
-        const newLog = new Datalogger(req.body);
+        const data = req.body;
+
+        // Convert the id field to ObjectId if it's provided
+        if (data.id) {
+            if (!mongoose.Types.ObjectId.isValid(data.id)) {
+                return res.status(400).json({ error: "Invalid ObjectId format for 'id'" });
+            }
+            data.id = mongoose.Types.ObjectId(data.id);
+        }
+
+        const newLog = new Datalogger(data);
         const savedLog = await newLog.save();
         res.status(201).json(savedLog);
     } catch (err) {
